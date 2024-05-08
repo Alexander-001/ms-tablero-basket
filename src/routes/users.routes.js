@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const jwt = require("jsonwebtoken");
 const { check } = require("express-validator");
 const {
   authUser,
@@ -10,6 +11,25 @@ const {
 } = require("../controllers/users.controller");
 
 const router = Router();
+
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({
+      message: "Unauthorized",
+    });
+  }
+  jwt.verify(token, process.env.SECRET_PASS, (err, resp) => {
+    if (err) {
+      return res.status(403).json({
+        message: "Token expired",
+      });
+    }
+    req.user = resp.user;
+    next();
+  });
+};
 
 const validUser = [
   check("email", "Se debe ingresar correo").not().isEmpty(),
@@ -24,9 +44,9 @@ const validateLogin = [
 
 router.post("/login", validateLogin, authUser);
 router.post("/add", validUser, addUser);
-router.get("/", getUsers);
-router.get("/:id", getUserById);
-router.patch("/:id", validUser, updateUser);
-router.delete("/:id", deleteUser);
+router.get("/", authenticateToken, getUsers);
+router.get("/:id", authenticateToken, getUserById);
+router.patch("/:id", authenticateToken, validUser, updateUser);
+router.delete("/:id", authenticateToken, deleteUser);
 
 module.exports = router;
