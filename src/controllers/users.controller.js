@@ -11,23 +11,33 @@ const STATUS_CODES = {
 
 const authUser = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(200).json({
+        errors: errors.array(),
+        CodeResult: STATUS_CODES.INVALID,
+        message: "",
+      });
+    }
     const { email, password } = req.body;
     let user = await Users.findOne({ email });
     if (!user) {
       return res.json({
+        errors: [],
         message: "El usuario no existe.",
         CodeResult: STATUS_CODES.INVALID,
-        user: null,
-        token: null,
+        user: {},
+        token: "",
       });
     }
     const successPassword = await bcrypt.compareSync(password, user.password);
     if (!successPassword) {
       return res.json({
+        errors: [],
         message: "La contraseña es incorrecta.",
         CodeResult: STATUS_CODES.INVALID,
-        user: null,
-        token: null,
+        user: {},
+        token: "",
       });
     }
     const payload = {
@@ -45,20 +55,22 @@ const authUser = async (req, res) => {
       (error, token) => {
         if (error) throw error;
         res.status(200).json({
-          token,
+          errors: [],
           message: "",
-          user,
           CodeResult: STATUS_CODES.SUCCESS,
+          user,
+          token,
         });
       }
     );
   } catch (error) {
     console.log(error);
     res.status(500).json({
+      errors: [],
       message: "Error al iniciar sesión.",
       CodeResult: STATUS_CODES.ERROR,
-      token: null,
-      user: null,
+      user: {},
+      token: "",
     });
   }
 };
