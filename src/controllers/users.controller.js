@@ -67,32 +67,36 @@ const addUser = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res
-        .status(200)
-        .json({ errors: errors.array(), CodeResult: STATUS_CODES.INVALID });
+      return res.status(200).json({
+        errors: errors.array(),
+        CodeResult: STATUS_CODES.INVALID,
+        message: "",
+      });
     }
-    const { username, password } = req.body;
-    let user = await Users.findOne({ username });
+    const { email, password } = req.body;
+    let user = await Users.findOne({ email });
     if (user) {
       return res.status(200).json({
-        message: "Usuario ya existe.",
+        errors: [],
         CodeResult: STATUS_CODES.INVALID,
+        message: "Usuario ya existe.",
       });
     }
     user = new Users(req.body);
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
-    user.username = user.username.toLowerCase();
     await user.save();
     return res.status(200).json({
-      message: "Usuario agregado correctamente",
+      errors: [],
       CodeResult: STATUS_CODES.SUCCESS,
+      message: "Usuario agregado correctamente",
     });
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: "Error al añadir usuario.",
+      errors: [],
       CodeResult: STATUS_CODES.ERROR,
+      message: "Error al añadir usuario.",
     });
   }
 };
