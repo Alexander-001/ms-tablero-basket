@@ -50,7 +50,7 @@ const authUser = async (req, res) => {
       payload,
       process.env.SECRET_PASS,
       {
-        expiresIn: "1m",
+        expiresIn: "1h",
       },
       (error, token) => {
         if (error) throw error;

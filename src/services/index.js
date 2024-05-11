@@ -34,8 +34,8 @@ class Server {
 
   routes() {
     //* Api schedules
-    /* this.app.use(this.score, require("../routes/heroes.routes")); */
     this.app.use(this.users, require("../routes/users.routes"));
+    this.app.use(this.score, require("../routes/scores.routes"));
   }
 
   listen() {

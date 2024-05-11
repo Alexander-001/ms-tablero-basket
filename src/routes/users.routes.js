@@ -17,13 +17,13 @@ const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(" ")[1];
   if (!token) {
     return res.status(401).json({
-      message: "Unauthorized",
+      message: "No autorizado",
     });
   }
   jwt.verify(token, process.env.SECRET_PASS, (err, resp) => {
     if (err) {
       return res.status(403).json({
-        message: "Token expired",
+        message: "Token expirado",
       });
     }
     req.user = resp.user;
