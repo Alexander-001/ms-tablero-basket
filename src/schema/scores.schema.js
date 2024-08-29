@@ -1,5 +1,13 @@
 const mongoose = require("mongoose");
 const scoresSchema = mongoose.Schema({
+  homeTeam: {
+    type: String,
+    required: true,
+  },
+  visitTeam: {
+    type: String,
+    required: true,
+  },
   scoreHome: {
     type: Number,
     required: true,

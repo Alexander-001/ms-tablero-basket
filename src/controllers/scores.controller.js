@@ -54,10 +54,18 @@ const getScores = async (_, res) => {
 
 const getScoresCreatedBy = async (req, res) => {
   try {
-    const scores = await Score.find({ createdBy: req.params.createdBy });
+    let scoresDb = await Score.find();
+    let arrayScores = [];
+    for (let i = 0; i < scoresDb.length; i++) {
+      if (
+        scoresDb[i].createdBy.replace(/\s/g, "") ===
+        req.params.createdBy.replace(/\s/g, "")
+      )
+        arrayScores.push(scoresDb[i]);
+    }
     return res.status(200).json({
       message: "Marcadores",
-      scores,
+      scores: arrayScores,
       CodeResult: STATUS_CODES.SUCCESS,
     });
   } catch (error) {

@@ -16,7 +16,7 @@ const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(" ")[1];
   if (!token) {
     return res.status(401).json({
-      message: "No autorizado",
+      message: "Se debe ingresar token",
       error: true,
     });
   }
@@ -33,6 +33,8 @@ const authenticateToken = (req, res, next) => {
 };
 
 const validScore = [
+  check("homeTeam", "Se debe ingresar nombre de local").not().isEmpty(),
+  check("visitTeam", "Se debe ingresar nombre de visita").not().isEmpty(),
   check("scoreHome", "Se debe ingresar marcador de local").not().isEmpty(),
   check("scoreVisit", "Se debe ingresar marcador de visita").not().isEmpty(),
   check("foulsHome", "Se debe ingresar faltas de local").not().isEmpty(),
